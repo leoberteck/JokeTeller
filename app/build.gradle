@@ -6,7 +6,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.google.cloud.tools:endpoints-framework-gradle-plugin:1.0.2'
+
     }
 }
 
@@ -26,9 +26,13 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField "String", "ENDPOINTS_SERVER_URL", "\"http://10.0.2.2:8080/_ah/api/\""
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            buildConfigField "String", "ENDPOINTS_SERVER_URL", "\"https://joketeller-2018.appspot.com/_ah/api/\""
         }
     }
     packagingOptions {
@@ -41,17 +45,27 @@ android {
         exclude 'META-INF/notice.txt'
         exclude 'META-INF/ASL2.0'
     }
+    lintOptions {
+        abortOnError false
+    }
 }
 
 dependencies {
+
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    endpointsServer project(path: ':backend', configuration: 'endpoints')
-    implementation project(':JokeProvider')
+    implementation 'com.google.guava:guava:19.0'
+    endpointsServer (project(path: ':backend', configuration: 'endpoints')) {
+        exclude group: 'com.google.guava'
+    }
 
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'com.google.android.gms:play-services-ads:11.8.0'
-    implementation 'com.google.api-client:google-api-client:1.23.0'
-    implementation 'com.google.http-client:google-http-client-android:1.23.0'
+    implementation ('com.google.api-client:google-api-client-android:1.23.0') {
+        exclude group: 'com.google.guava'
+    }
+    implementation ('com.google.http-client:google-http-client-android:1.23.0') {
+        exclude group: 'com.google.guava'
+    }
     implementation 'com.google.code.findbugs:jsr305:3.0.1'
 
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {

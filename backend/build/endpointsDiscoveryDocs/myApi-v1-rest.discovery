@@ -8,8 +8,8 @@
    }
   }
  },
- "basePath": "/_ah/api/myApi/v1/sayHi/",
- "baseUrl": "https://myApplicationId.appspot.com/_ah/api/myApi/v1/sayHi/",
+ "basePath": "/_ah/api/myApi/v1/",
+ "baseUrl": "https://myApplicationId.appspot.com/_ah/api/myApi/v1/",
  "batchPath": "batch",
  "description": "This is an API",
  "discoveryVersion": "v1",
@@ -20,22 +20,23 @@
  "id": "myApi:v1",
  "kind": "discovery#restDescription",
  "methods": {
-  "sayHi": {
-   "httpMethod": "POST",
-   "id": "myApi.sayHi",
-   "parameterOrder": [
-    "name"
-   ],
-   "parameters": {
-    "name": {
-     "location": "path",
-     "required": true,
-     "type": "string"
-    }
-   },
-   "path": "{name}",
+  "getJokes": {
+   "httpMethod": "GET",
+   "id": "myApi.getJokes",
+   "path": "jokecollection",
    "response": {
-    "$ref": "MyBean"
+    "$ref": "JokeCollection"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "getRandomJoke": {
+   "httpMethod": "GET",
+   "id": "myApi.getRandomJoke",
+   "path": "joke",
+   "response": {
+    "$ref": "Joke"
    },
    "scopes": [
     "https://www.googleapis.com/auth/userinfo.email"
@@ -93,16 +94,32 @@
  "protocol": "rest",
  "rootUrl": "https://myApplicationId.appspot.com/_ah/api/",
  "schemas": {
-  "MyBean": {
-   "id": "MyBean",
+  "Joke": {
+   "id": "Joke",
    "properties": {
-    "data": {
+    "content": {
      "type": "string"
+    },
+    "id": {
+     "format": "int32",
+     "type": "integer"
+    }
+   },
+   "type": "object"
+  },
+  "JokeCollection": {
+   "id": "JokeCollection",
+   "properties": {
+    "items": {
+     "items": {
+      "$ref": "Joke"
+     },
+     "type": "array"
     }
    },
    "type": "object"
   }
  },
- "servicePath": "myApi/v1/sayHi/",
+ "servicePath": "myApi/v1/",
  "version": "v1"
 }

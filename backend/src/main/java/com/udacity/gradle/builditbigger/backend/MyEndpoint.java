@@ -1,10 +1,13 @@
 package com.udacity.gradle.builditbigger.backend;
 
+import com.example.jokeprovider.Joke;
+import com.example.jokeprovider.Joker;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 
-import javax.inject.Named;
+import java.util.List;
+import java.util.Random;
 
 /** An endpoint class we are exposing */
 @Api(
@@ -18,13 +21,20 @@ import javax.inject.Named;
 )
 public class MyEndpoint {
 
-    /** A simple endpoint method that takes a name and says Hi back */
-    @ApiMethod(name = "sayHi")
-    public MyBean sayHi(@Named("name") String name) {
-        MyBean response = new MyBean();
-        response.setData("Hi, " + name);
+    private final Joker joker = Joker.newInstance();
+    private final Random random = new Random();
 
-        return response;
+    @ApiMethod(name = "getJokes")
+    public List<Joke> getJokes(){
+        return joker.getJokes();
     }
 
+    @ApiMethod(name = "getRandomJoke")
+    public Joke getRandomJoke(){
+        return joker.getJokes().get(nextInt(0, joker.getJokes().size()));
+    }
+
+    private int nextInt(int min, int max){
+        return random.nextInt(max - min + 1) + min;
+    }
 }
