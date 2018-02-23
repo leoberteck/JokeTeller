@@ -31,7 +31,7 @@ public class MyEndpoint {
 
     @ApiMethod(name = "getRandomJoke")
     public Joke getRandomJoke(){
-        return joker.getJokes().get(nextInt(0, joker.getJokes().size()));
+        return joker.getJokes().get(nextInt(0, joker.getJokes().size()-1));
     }
 
     private int nextInt(int min, int max){
