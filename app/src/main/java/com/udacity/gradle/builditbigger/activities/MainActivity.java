@@ -1,27 +1,35 @@
 package com.udacity.gradle.builditbigger.activities;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.example.jokeviews.JokeActivity;
 import com.udacity.gradle.builditbigger.R;
-import com.udacity.gradle.builditbigger.api.EndpointsAsyncTask;
-import com.udacity.gradle.builditbigger.backend.myApi.model.Joke;
+import com.udacity.gradle.builditbigger.fragments.MainActivityFragment;
+import com.udacity.gradle.builditbigger.mvp.MainActivityMvp;
+import com.udacity.gradle.builditbigger.mvp.MainActivityPresenter;
 import com.udacity.gradle.builditbigger.util.SimpleIdlingResource;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MainActivityMvp.MainActivityInterface {
 
     @Nullable
     private SimpleIdlingResource idlingResource;
+
+    private static final MainActivityMvp.MainActivityPresenterInterface presenter = new MainActivityPresenter();
+
+    private ProgressBar progressBar;
 
     @NonNull
     @VisibleForTesting
@@ -36,8 +44,17 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-    }
+        presenter.setMainActivity(this);
 
+        progressBar = findViewById(R.id.progressBar);
+        progressBar.setVisibility(presenter.getProgressVisibility());
+
+        Fragment fragment = MainActivityFragment.newInstance(presenter);
+        final FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .commit();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -57,24 +74,35 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.action_settings) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
-    public void tellJoke(View view) {
-        final Context context = this;
+    @Override
+    public void showJokeActivity(String content) {
+        Intent jokeIntent = new Intent(this, JokeActivity.class);
+        jokeIntent.putExtra(JokeActivity.JOKE_CONTENT_EXTRA, content);
+        startActivity(jokeIntent);
+    }
+
+    @Override
+    public void showErrorMessage() {
+        Toast.makeText(this, R.string.fail_get_content, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void showLoader() {
         if(idlingResource != null) idlingResource.setIdleState(false);
-        EndpointsAsyncTask.getRandomJoke(context, new EndpointsAsyncTask.OnTaskFinishListener<Joke>() {
-            @Override
-            public void onTaskFinish(Joke result) {
-                if(idlingResource != null) idlingResource.setIdleState(true);
-                Intent jokeIntent = new Intent(context, JokeActivity.class);
-                jokeIntent.putExtra(
-                    JokeActivity.JOKE_CONTENT_EXTRA
-                    , result != null ? result.getContent() : getString(R.string.fail_get_content)
-                );
-                startActivity(jokeIntent);
-            }
-        });
+        presenter.setProgressVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideLoader() {
+        if(idlingResource != null) idlingResource.setIdleState(true);
+        presenter.setProgressVisibility(View.GONE);
+    }
+
+    @Override
+    public void setProgressVisibility(int visibility) {
+        progressBar.setVisibility(visibility);
     }
 }
