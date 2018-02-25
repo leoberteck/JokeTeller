@@ -95,3 +95,70 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 }
+
+//[
+//    ':app:clean'
+//    , ':app:build'
+//    , ':backend:appengineStart'
+//    , ':app:connectedAndroidTest'
+//    , ':jokeViews:connectedAndroidTest'
+//    , ':backend:appengineStop'
+//]
+
+task fullTest{
+    description 'Stops local endpoints server'
+    dependsOn ':backend:appengineStop'
+    dependsOn 'fullTestPart1'
+    mustRunAfter 'fullTestPart1'
+    doLast{
+        println('===============STOPPED ENDPOINTS SERVER===============')
+    }
+}
+
+task fullTestPart1{
+    description 'Execute android tests on the app project'
+    dependsOn 'connectedAndroidTest'
+    dependsOn 'fullTestPart2'
+    mustRunAfter 'fullTestPart2'
+    doLast{
+        println('===============EXECUTED TESTS FOR THE APP PROJECT===============')
+    }
+}
+
+task fullTestPart2{
+    description 'Execute android tests on the jokeViews project'
+    dependsOn ':jokeViews:connectedAndroidTest'
+    dependsOn 'fullTestPart3'
+    mustRunAfter 'fullTestPart3'
+    doLast{
+        println('===============EXECUTED TESTS FOR THE JOKEVIEWS PROJECT===============')
+    }
+}
+
+task fullTestPart3{
+    description 'Start google endpoints server locally'
+    dependsOn ':backend:appengineStart'
+    dependsOn 'fullTestPart4'
+    mustRunAfter 'fullTestPart4'
+    doLast{
+        println('===============STARTED ENDPOINTS SERVER===============')
+    }
+}
+
+task fullTestPart4{
+    description 'Build the application'
+    dependsOn 'build'
+    dependsOn 'fullTestPart5'
+    mustRunAfter 'fullTestPart5'
+    doLast{
+        println('===============BUILDED PROJECT===============')
+    }
+}
+
+task fullTestPart5{
+    description 'Clean the application'
+    dependsOn 'clean'
+    doLast{
+        println('===============CLEANED PROJECT===============')
+    }
+}
