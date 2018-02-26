@@ -29,6 +29,7 @@ public class EndpointsTest {
         });
     }
 
+    @Test
     public void testGetRandomJoke(){
         Context context = getInstrumentation().getContext();
         EndpointsAsyncTask.getRandomJoke(context, new EndpointsAsyncTask.OnTaskFinishListener<Joke>() {

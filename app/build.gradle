@@ -96,15 +96,6 @@ dependencies {
     })
 }
 
-//[
-//    ':app:clean'
-//    , ':app:build'
-//    , ':backend:appengineStart'
-//    , ':app:connectedAndroidTest'
-//    , ':jokeViews:connectedAndroidTest'
-//    , ':backend:appengineStop'
-//]
-
 task fullTest{
     description 'Stops local endpoints server'
     dependsOn ':backend:appengineStop'
